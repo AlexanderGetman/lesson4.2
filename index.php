@@ -1,16 +1,14 @@
 <?php
-header('charset=utf-8');
 
-$pdo = new PDO('mysql:host=localhost;dbname=agetman', 'agetman', 'neto1792');
+$pdo = new PDO('mysql:host=localhost;dbname=mybd', 'root', '');
 $result = $pdo->query('SELECT * FROM tasks');
 
-
-if (!empty($_GET['id']) && !empty($_GET['action'])) {
-    if (($_GET['action'] == 'edit') && !empty($_POST['description'])) {
+if (isset($_GET['id']) && isset($_GET['action'])) {
+    if (($_GET['action'] == 'edit') && isset($_POST['description'])) {
         $sql = "UPDATE tasks SET description = ? WHERE id = ?";
         $statement = $pdo->prepare($sql);
         $statement->execute(["{$_POST['description']}", "{$_GET['id']}"]);
-        header('Location: ./index.php');
+        header('Location: ./indexbc.php');
     } else {
         $sql = "SELECT * FROM tasks";
     }
@@ -18,32 +16,32 @@ if (!empty($_GET['id']) && !empty($_GET['action'])) {
         $sql = "UPDATE tasks SET is_done = 1 WHERE id = ?";
         $statement = $pdo->prepare($sql);
         $statement->execute(["{$_GET['id']}"]);
-        header( 'Location: ./index.php');
+        header( 'Location: ./indexbc.php');
     }
     if ($_GET['action'] == 'delete') {
         $sql = "DELETE FROM tasks WHERE id = ?";
         $statement = $pdo->prepare($sql);
         $statement->execute(["{$_GET['id']}"]);
-        header( 'Location: ./index.php');
+        header( 'Location: ./indexbc.php');
     }
 }
 
-if (!empty($_POST['description']) && empty($_GET['action'])) {
+if (isset($_POST['description']) && empty($_GET['action'])) {
     $date = date('Y-m-d H:i:s');
     $sql = "INSERT INTO  tasks (description, date_added) VALUES (?, ?)";
     $statement = $pdo->prepare($sql);
     $statement->execute(["{$_POST['description']}", "{$date}"]);
+    header( 'Location: ./indexbc.php');
 }
 
-if (!empty($_POST['sort']) && !empty($_POST['sort_by'])) {
+if (isset($_POST['sort']) && isset($_POST['sort_by'])) {
     $sql = "SELECT * FROM tasks ORDER BY {$_POST['sort_by']} ASC";
     $statement = $pdo->prepare($sql);
-    $statement->execute();
-    header( 'Location: ./index.php');
+    $statement->execute(["{$_POST['sort_by']}"]);
+    header( 'Location: ./indexbc.php');
 }
 
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -53,12 +51,12 @@ if (!empty($_POST['sort']) && !empty($_POST['sort_by'])) {
 <div style="text-align: center">
     <h1>Задачи</h1>
 </div>
-<form action="index.php" method="POST">
-    <input type="text" name="description" placeholder="Описание задачи" value="<?php if (!empty($_POST['description'])) echo $_POST['description']; ?>">
+<form action="indexbc.php" method="POST">
+    <input type="text" name="description" placeholder="Описание задачи" value="<?php if (isset($_POST['description'])) echo $_POST['description']; ?>">
     <input type="submit" name="save" value="Сохранить">
 </form>
 
-<form action="index.php" method="post">
+<form action="indexbc.php" method="POST">
     <input type="submit" class="button" value="Сортировать по:" name="sort"/>
     <select name="sort_by">
         <option value="description"> Описанию </option>
